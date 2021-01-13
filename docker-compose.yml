@@ -1,0 +1,32 @@
+version: '3'
+services:
+  mariadb:
+    build:
+      context: docker/mariadb
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./mariadb:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
+    networks:
+      - internal
+  app:
+    build:
+      context: .
+    volumes:
+      - ./:/app
+    ports:
+      - 80:5000
+    depends_on:
+      - mariadb
+    networks:
+      - internal
+networks:
+  internal:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.210.0/28
